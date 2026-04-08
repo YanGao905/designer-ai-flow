@@ -442,7 +442,7 @@ html, body {
       <div id="after-fix" class="after-body">
         <div class="cards-header">
           <span class="cards-label" id="cards-label">What stops designers from fixing it?</span>
-          <button class="flip-btn" id="flip-btn" onclick="flipCards()">How CLAUDE.md solves this →</button>
+          <button class="flip-btn" id="flip-btn" onclick="flipCards()">How the Design Craft Playbook solves this →</button>
         </div>
 
         <!-- View A: concern cards -->
@@ -451,7 +451,7 @@ html, body {
         <!-- View B: collaboration model -->
         <div class="collab-model hidden" id="collab-view">
           <div class="claude-md-note">
-            CLAUDE.md encodes repo rules for AI — scope check, branch naming, PR targets. Designer focuses on craft; AI handles the rest.
+            The Design Craft Playbook pre-configures AI with repo rules — scope check, branch naming, PR targets. Designer focuses on craft; AI handles the rest.
           </div>
           <div class="collab-col-headers">
             <span class="col-h d">👤 Designer does</span>
@@ -586,7 +586,7 @@ html, body {
       : 'What stops designers from fixing it?';
     document.getElementById('flip-btn').textContent = showCollab
       ? '← Back to blockers'
-      : 'How CLAUDE.md solves this →';
+      : 'How the Design Craft Playbook solves this →';
   }
 
   function setMode(mode) {
@@ -615,7 +615,7 @@ html, body {
     document.getElementById('collab-view').classList.add('hidden');
     document.getElementById('concern-view').classList.remove('hidden');
     document.getElementById('cards-label').textContent = 'What stops designers from fixing it?';
-    document.getElementById('flip-btn').textContent = 'How CLAUDE.md solves this →';
+    document.getElementById('flip-btn').textContent = 'How the Design Craft Playbook solves this →';
 
     // Step 3
     const s3 = document.getElementById('step3-panel');
