@@ -88,13 +88,26 @@ html, body {
    ============================================= */
 .process-rail {
   flex-shrink: 0;
-  display: flex; align-items: center;
-  padding: 0 clamp(10px,1vw,16px);
-  gap: 0;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: clamp(12px, 1.5vw, 20px);
+  position: relative;
+}
+/* Connecting line behind the circles */
+.process-rail::after {
+  content: '';
+  position: absolute;
+  top: calc(clamp(28px, 3.5vh, 36px) / 2);
+  transform: translateY(-50%);
+  left: 0; right: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--border-warm), var(--terracotta) 50%, var(--border-warm));
+  z-index: 0;
+  transition: opacity 0.35s;
 }
 .rail-step {
   display: flex; flex-direction: column; align-items: center;
-  gap: 5px; flex: 1; position: relative; z-index: 1;
+  gap: 5px; position: relative; z-index: 1;
 }
 .rail-circle {
   width: clamp(28px,3.5vh,36px); height: clamp(28px,3.5vh,36px);
@@ -122,28 +135,7 @@ html, body {
 .rail-label.active { color: var(--terracotta); }
 .rail-label.dim    { color: var(--stone); }
 
-.rail-arrow {
-  flex: 2; display: flex; align-items: flex-start;
-  padding-top: calc(clamp(28px, 3.5vh, 36px) / 2);
-  transform: translateY(-50%);
-}
-.arrow-inner {
-  display: flex; align-items: center;
-  width: 100%;
-  transition: opacity 0.35s;
-}
-.arrow-shaft {
-  flex: 1; height: 1.5px;
-  background: linear-gradient(90deg, var(--border-warm), var(--terracotta));
-}
-.arrow-head {
-  width: 0; height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 8px solid var(--terracotta);
-  opacity: 0.75;
-}
-.mode-before .arrow-inner { opacity: 0.2; }
+.mode-before::after { opacity: 0.2; }
 
 /* =============================================
    MAIN CONTENT
@@ -208,12 +200,6 @@ html, body {
   width: 5px; height: 5px; border-radius: 50%;
   background: var(--terracotta); opacity: 0.65;
   flex-shrink: 0; margin-top: 5px;
-}
-.s3-before .step-item::before { background: var(--error); }
-
-/* Step 3 before */
-.s3-before {
-  border-color: rgba(181,51,51,0.18) !important;
 }
 
 /* ── Center panel ── */
@@ -396,15 +382,9 @@ html, body {
       <div class="rail-circle" id="rc1">1</div>
       <div class="rail-label" id="rl1">Discover</div>
     </div>
-    <div class="rail-arrow">
-      <div class="arrow-inner"><div class="arrow-shaft"></div><div class="arrow-head"></div></div>
-    </div>
     <div class="rail-step">
       <div class="rail-circle active" id="rc2">2</div>
       <div class="rail-label active" id="rl2">Fix</div>
-    </div>
-    <div class="rail-arrow">
-      <div class="arrow-inner"><div class="arrow-shaft"></div><div class="arrow-head"></div></div>
     </div>
     <div class="rail-step">
       <div class="rail-circle" id="rc3">3</div>
@@ -639,7 +619,7 @@ html, body {
 
     // Step 3
     const s3 = document.getElementById('step3-panel');
-    s3.className = before ? 'panel s3-before' : 'panel';
+    s3.className = 'panel';
     document.getElementById('s3-title').textContent = before ? 'Backlog' : 'Quality';
     document.getElementById('s3-desc').textContent  = before
       ? 'Design craft issues pile up. Quality degrades silently.'
