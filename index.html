@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Designer × AI · Fix Design Craft Bugs</title>
+<style>
+/* =============================================
+   CLAUDE DESIGN LANGUAGE
+   Parchment · Georgia serif · Terracotta accent
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --parchment:    #f5f4ed;
+  --ivory:        #faf9f5;
+  --white:        #ffffff;
+  --warm-sand:    #e8e6dc;
+  --near-black:   #141413;
+  --terracotta:   #c96442;
+  --coral:        #d97757;
+  --error:        #b53333;
+  --charcoal:     #4d4c48;
+  --olive:        #5e5d59;
+  --stone:        #87867f;
+  --border-cream: #f0eee6;
+  --border-warm:  #e8e6dc;
+  --ring:         #d1cfc5;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans:  -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+
+html, body {
+  height: 100%; overflow: hidden;
+  font-family: var(--sans);
+  background: var(--parchment);
+  color: var(--near-black);
+}
+
+/* =============================================
+   SLIDE
+   ============================================= */
+.slide {
+  width: 100vw; height: 100vh; height: 100dvh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  padding: clamp(14px, 2vh, 22px) clamp(20px, 3vw, 44px);
+  gap: clamp(10px, 1.5vh, 16px);
+}
+
+/* =============================================
+   HEADER
+   ============================================= */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  padding-bottom: clamp(10px, 1.4vh, 14px);
+  border-bottom: 1px solid var(--border-cream);
+}
+.brand-title {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.4vw, 20px);
+  font-weight: 500; color: var(--near-black);
+  letter-spacing: -0.2px; line-height: 1.2;
+}
+.brand-title em { color: var(--terracotta); font-style: normal; }
+.brand-sub { font-size: clamp(11px, 0.82vw, 13px); color: var(--stone); margin-top: 3px; }
+
+.toggle {
+  display: flex; background: var(--warm-sand);
+  border-radius: 8px; padding: 3px;
+  box-shadow: 0 0 0 1px var(--ring);
+}
+.tbtn {
+  padding: clamp(5px,0.6vh,8px) clamp(16px,1.8vw,26px);
+  border-radius: 6px; border: none; cursor: pointer;
+  font-family: var(--sans); font-size: clamp(12px,0.92vw,14px);
+  font-weight: 500; background: transparent; color: var(--stone);
+  transition: all 0.2s ease;
+}
+.tbtn.active {
+  background: var(--white); color: var(--charcoal);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+/* =============================================
+   PROCESS RAIL
+   ============================================= */
+.process-rail {
+  flex-shrink: 0;
+  display: flex; align-items: center;
+  padding: 0 clamp(10px,1vw,16px);
+  gap: 0;
+}
+.rail-step {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 5px; flex: 1; position: relative; z-index: 1;
+}
+.rail-circle {
+  width: clamp(28px,3.5vh,36px); height: clamp(28px,3.5vh,36px);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: clamp(12px,1.2vh,15px); font-weight: 500;
+  background: var(--ivory);
+  box-shadow: 0 0 0 1px var(--border-warm);
+  color: var(--olive);
+  transition: all 0.35s ease;
+}
+.rail-circle.active {
+  background: var(--terracotta); color: var(--white);
+  box-shadow: 0 0 0 1px var(--terracotta);
+}
+.rail-circle.dim { background: var(--warm-sand); color: var(--stone); }
+
+.rail-label {
+  font-size: clamp(10px,0.82vw,12px); font-weight: 500;
+  color: var(--olive); white-space: nowrap;
+  letter-spacing: 0.01em;
+  transition: color 0.35s;
+}
+.rail-label.active { color: var(--terracotta); }
+.rail-label.dim    { color: var(--stone); }
+
+.rail-arrow {
+  flex: 2; display: flex; align-items: flex-start;
+  padding-top: calc(clamp(28px, 3.5vh, 36px) / 2);
+  transform: translateY(-50%);
+}
+.arrow-inner {
+  display: flex; align-items: center;
+  width: 100%;
+  transition: opacity 0.35s;
+}
+.arrow-shaft {
+  flex: 1; height: 1.5px;
+  background: linear-gradient(90deg, var(--border-warm), var(--terracotta));
+}
+.arrow-head {
+  width: 0; height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--terracotta);
+  opacity: 0.75;
+}
+.mode-before .arrow-inner { opacity: 0.2; }
+
+/* =============================================
+   MAIN CONTENT
+   ============================================= */
+.main-content {
+  flex: 1;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  gap: clamp(10px, 1.5vh, 16px);
+  min-height: 0;
+}
+
+/* =============================================
+   PANELS  1fr · 2fr · 1fr
+   ============================================= */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: clamp(12px, 1.5vw, 20px);
+  align-items: stretch;
+}
+
+.panel {
+  background: var(--ivory);
+  border: 1px solid var(--border-cream);
+  border-radius: 12px;
+  padding: clamp(18px,2.2vh,26px) clamp(16px,1.6vw,22px);
+  display: flex; flex-direction: column;
+  gap: clamp(8px,1vh,12px);
+  box-shadow: rgba(0,0,0,0.04) 0 4px 20px;
+  overflow: hidden;
+  transition: border-color 0.35s, background 0.35s;
+}
+
+.panel-head {
+  display: flex; align-items: center; gap: 9px;
+  flex-shrink: 0;
+}
+.panel-title {
+  font-family: var(--serif);
+  font-size: clamp(15px,1.3vw,19px); font-weight: 500;
+  color: var(--near-black); line-height: 1.2;
+}
+.panel-desc {
+  font-size: clamp(11px,0.86vw,13px); color: var(--olive);
+  line-height: 1.65;
+}
+
+/* Step items — side panels */
+.step-list {
+  display: flex; flex-direction: column;
+  gap: clamp(5px, 0.7vh, 8px);
+  flex: 1;
+}
+.step-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: clamp(11px, 0.85vw, 13px);
+  color: var(--charcoal); line-height: 1.5;
+}
+.step-item::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--terracotta); opacity: 0.65;
+  flex-shrink: 0; margin-top: 5px;
+}
+.s3-before .step-item::before { background: var(--error); }
+
+/* Step 3 before */
+.s3-before {
+  background: var(--parchment) !important;
+  border-color: rgba(181,51,51,0.18) !important;
+}
+
+/* ── Center panel ── */
+.center-panel {
+  background: var(--white);
+  border-color: rgba(201,100,66,0.25);
+  box-shadow: rgba(0,0,0,0.06) 0 4px 24px;
+  position: relative;
+}
+.center-panel::before {
+  content: '';
+  position: absolute; left: 0; top: 20px; bottom: 20px;
+  width: 3px; background: var(--terracotta);
+  border-radius: 0 2px 2px 0;
+  transition: background 0.35s, opacity 0.35s;
+}
+.center-before .center-panel { border-color: rgba(201,100,66,0.18); }
+.center-before .center-panel::before { background: var(--coral); opacity: 0.5; }
+
+.c2-title {
+  font-family: var(--serif);
+  font-size: clamp(15px,1.3vw,19px); font-weight: 500;
+  color: var(--near-black); line-height: 1.2;
+}
+
+/* ── Before: dev queue ── */
+.dev-flow { display: flex; flex-direction: column; flex: 1; justify-content: center; gap: clamp(2px,.3vh,4px); }
+.dev-row { display: flex; gap: 16px; align-items: flex-start; }
+.dev-left { display: flex; flex-direction: column; align-items: center; width: 30px; flex-shrink: 0; }
+.dev-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.d1 { background: rgba(181,51,51,0.1); box-shadow: 0 0 0 1px rgba(181,51,51,0.2); }
+.d2 { background: rgba(201,100,66,0.1); box-shadow: 0 0 0 1px rgba(201,100,66,0.2); }
+.d3 { background: var(--warm-sand); box-shadow: 0 0 0 1px var(--ring); }
+.dev-line { width: 1px; flex: 1; min-height: 18px; background: var(--border-warm); }
+.dev-body { padding: clamp(4px,.5vh,6px) 0 clamp(16px,2vh,24px); }
+.dev-tag {
+  display: inline-block;
+  font-size: clamp(9px,0.7vw,10px); font-weight: 500;
+  padding: 2px 7px; border-radius: 4px; margin-bottom: 3px;
+}
+.tag-p2   { background: rgba(181,51,51,0.1); color: var(--error); }
+.tag-slow { background: rgba(201,100,66,0.1); color: var(--terracotta); }
+.tag-risk { background: var(--warm-sand); color: var(--olive); }
+.dev-body h4 {
+  font-family: var(--serif);
+  font-size: clamp(12px,1vw,14px); font-weight: 500;
+  color: var(--near-black); margin-bottom: 2px;
+}
+.dev-body p { font-size: clamp(10px,0.8vw,12px); color: var(--olive); line-height: 1.5; }
+
+/* ── After: wrapper ── */
+.after-body { display: flex; flex-direction: column; flex: 1; gap: clamp(8px,1vh,12px); min-height: 0; }
+.cards-header { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.cards-label { font-size: clamp(11px,0.85vw,13px); color: var(--stone); font-weight: 500; }
+.flip-btn {
+  font-family: var(--sans);
+  font-size: clamp(10px,0.78vw,12px); font-weight: 500;
+  padding: clamp(4px,.5vh,7px) clamp(11px,1.1vw,16px);
+  border-radius: 8px; border: none;
+  background: var(--terracotta); color: var(--ivory);
+  cursor: pointer; transition: background 0.18s;
+  white-space: nowrap; box-shadow: 0 0 0 1px var(--terracotta);
+}
+.flip-btn:hover { background: #b5573a; }
+
+/* ── Concern cards ── */
+.cards-stack { display: flex; flex-direction: column; gap: clamp(7px,1vh,10px); flex: 1; }
+.c-card {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: clamp(10px,1.2vh,14px) clamp(11px,1.1vw,14px);
+  border-radius: 8px; font-size: clamp(11px,0.86vw,13px); line-height: 1.5;
+  background: rgba(181,51,51,0.06); border: 1px solid rgba(181,51,51,0.18); color: #4d2020;
+}
+.c-icon {
+  flex-shrink: 0; width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; margin-top: 2px;
+  background: rgba(181,51,51,0.15); color: var(--error);
+}
+
+/* ── Collaboration model ── */
+.collab-model { display: flex; flex-direction: column; gap: clamp(8px,1.1vh,12px); flex: 1; }
+.collab-col-headers {
+  display: grid; grid-template-columns: 5fr 24px 6fr;
+  padding: 0 4px 6px; border-bottom: 1px solid var(--border-cream);
+}
+.col-h {
+  font-size: clamp(9px,0.72vw,11px); font-weight: 600;
+  letter-spacing: 0.09em; text-transform: uppercase;
+}
+.col-h.d  { color: var(--charcoal); }
+.col-h.ai { color: var(--terracotta); }
+
+.collab-row {
+  display: grid; grid-template-columns: 5fr 24px 6fr;
+  align-items: center; gap: 6px;
+  background: var(--ivory); border: 1px solid var(--border-cream);
+  border-radius: 10px;
+  padding: clamp(12px,1.5vh,18px) clamp(12px,1.2vw,16px);
+  flex: 1;
+}
+.collab-d { display: flex; align-items: flex-start; gap: 9px; }
+.step-n {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--warm-sand); box-shadow: 0 0 0 1px var(--ring);
+  font-family: var(--serif); font-size: 11px; font-weight: 500; color: var(--charcoal);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.collab-d-text {
+  font-family: var(--serif);
+  font-size: clamp(11px,.9vw,13px); font-weight: 500;
+  color: var(--near-black); line-height: 1.45;
+}
+.collab-sep {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--terracotta); font-size: 14px;
+}
+.collab-a { display: flex; flex-direction: column; gap: 3px; }
+.collab-a-item {
+  display: flex; align-items: baseline; gap: 5px;
+  font-size: clamp(10px,.8vw,12px); color: var(--olive); line-height: 1.45;
+}
+.ai-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--terracotta); flex-shrink: 0; margin-top: 5px;
+}
+
+.claude-md-note {
+  font-size: clamp(10px, 0.8vw, 12px);
+  color: var(--olive); font-style: italic;
+  padding: 7px 11px;
+  background: rgba(201,100,66,0.06);
+  border-radius: 7px;
+  border-left: 2.5px solid var(--terracotta);
+  flex-shrink: 0; line-height: 1.5;
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-enter { animation: fadeUp 0.28s ease-out forwards; }
+
+.hidden { display: none !important; }
+
+@media (max-height: 620px) { .process-rail { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="brand-title">Designer × <em>AI</em> &nbsp;·&nbsp; Fixing Design Craft Bugs</div>
+      <div class="brand-sub">How designers can own quality without waiting for dev scheduling</div>
+    </div>
+    <div class="toggle">
+      <button class="tbtn" id="btn-before" onclick="setMode('before')">Before</button>
+      <button class="tbtn active" id="btn-after" onclick="setMode('after')">After</button>
+    </div>
+  </div>
+
+  <!-- Vertically centered content area -->
+  <div class="main-content">
+
+  <!-- Process rail -->
+  <div class="process-rail" id="rail">
+    <div class="rail-step">
+      <div class="rail-circle" id="rc1">1</div>
+      <div class="rail-label" id="rl1">Discover</div>
+    </div>
+    <div class="rail-arrow">
+      <div class="arrow-inner"><div class="arrow-shaft"></div><div class="arrow-head"></div></div>
+    </div>
+    <div class="rail-step">
+      <div class="rail-circle active" id="rc2">2</div>
+      <div class="rail-label active" id="rl2">Fix</div>
+    </div>
+    <div class="rail-arrow">
+      <div class="arrow-inner"><div class="arrow-shaft"></div><div class="arrow-head"></div></div>
+    </div>
+    <div class="rail-step">
+      <div class="rail-circle" id="rc3">3</div>
+      <div class="rail-label" id="rl3">Quality</div>
+    </div>
+  </div>
+
+  <!-- Three panels -->
+  <div class="panels" id="panels">
+
+    <!-- Step 1: Discover -->
+    <div class="panel" id="step1-panel">
+      <div class="panel-head">
+        <div class="panel-title">Discover</div>
+      </div>
+      <div class="panel-desc" id="s1-desc">Designer identifies a design craft issue in the product.</div>
+      <div class="step-list" id="s1-list"></div>
+    </div>
+
+    <!-- Step 2: Fix -->
+    <div class="panel center-panel" id="center-panel">
+      <div class="panel-head">
+        <div class="c2-title" id="c2-title">Fix</div>
+      </div>
+
+      <!-- Before: dev queue -->
+      <div id="before-fix" class="dev-flow hidden">
+        <div class="dev-row">
+          <div class="dev-left"><div class="dev-dot d1">📋</div><div class="dev-line"></div></div>
+          <div class="dev-body">
+            <span class="dev-tag tag-p2">P2 Bug</span>
+            <h4>Filed in backlog</h4>
+            <p>Lower priority than P1 bugs. No control over when it's picked up.</p>
+          </div>
+        </div>
+        <div class="dev-row">
+          <div class="dev-left"><div class="dev-dot d2">⏳</div><div class="dev-line"></div></div>
+          <div class="dev-body">
+            <span class="dev-tag tag-slow">Dev Scheduling</span>
+            <h4>Waiting for bandwidth</h4>
+            <p>Picked up only after P1s clear. Weeks or months, unpredictable.</p>
+          </div>
+        </div>
+        <div class="dev-row">
+          <div class="dev-left"><div class="dev-dot d3">🎲</div></div>
+          <div class="dev-body">
+            <span class="dev-tag tag-risk">Unpredictable</span>
+            <h4>Maybe fixed, eventually</h4>
+            <p>Many P2s are never resolved. Quality degrades silently.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- After: blockers → collab model -->
+      <div id="after-fix" class="after-body">
+        <div class="cards-header">
+          <span class="cards-label" id="cards-label">What stops designers from fixing it?</span>
+          <button class="flip-btn" id="flip-btn" onclick="flipCards()">How CLAUDE.md solves this →</button>
+        </div>
+
+        <!-- View A: concern cards -->
+        <div class="cards-stack" id="concern-view"></div>
+
+        <!-- View B: collaboration model -->
+        <div class="collab-model hidden" id="collab-view">
+          <div class="claude-md-note">
+            CLAUDE.md encodes repo rules for AI — scope check, branch naming, PR targets. Designer focuses on craft; AI handles the rest.
+          </div>
+          <div class="collab-col-headers">
+            <span class="col-h d">👤 Designer does</span>
+            <span></span>
+            <span class="col-h ai">🤖 AI auto-handles</span>
+          </div>
+          <div class="collab-row">
+            <div class="collab-d">
+              <span class="step-n">1</span>
+              <span class="collab-d-text">Screenshot + describe the issue</span>
+            </div>
+            <div class="collab-sep">→</div>
+            <div class="collab-a">
+              <div class="collab-a-item"><span class="ai-dot"></span>Find the file &amp; line of code</div>
+              <div class="collab-a-item"><span class="ai-dot"></span>Grep all affected pages</div>
+              <div class="collab-a-item"><span class="ai-dot"></span>Show visual checklist per page</div>
+            </div>
+          </div>
+          <div class="collab-row">
+            <div class="collab-d">
+              <span class="step-n">2</span>
+              <span class="collab-d-text">Confirm impact scope in the product</span>
+            </div>
+            <div class="collab-sep">→</div>
+            <div class="collab-a">
+              <div class="collab-a-item"><span class="ai-dot"></span>Make the code fix locally</div>
+              <div class="collab-a-item"><span class="ai-dot"></span>Wait for your confirmation</div>
+            </div>
+          </div>
+          <div class="collab-row">
+            <div class="collab-d">
+              <span class="step-n">3</span>
+              <span class="collab-d-text">Say "file PR"</span>
+            </div>
+            <div class="collab-sep">→</div>
+            <div class="collab-a">
+              <div class="collab-a-item"><span class="ai-dot"></span>Branch → commit → push to remote</div>
+              <div class="collab-a-item"><span class="ai-dot"></span>Open PR: title, description, reviewers</div>
+              <div class="collab-a-item"><span class="ai-dot"></span>Target features/dev automatically</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Quality / Backlog -->
+    <div class="panel" id="step3-panel">
+      <div class="panel-head">
+        <div class="panel-title" id="s3-title">Quality</div>
+      </div>
+      <div class="panel-desc" id="s3-desc">Designer owns quality end to end.</div>
+      <div class="step-list" id="s3-list"></div>
+    </div>
+
+  </div><!-- /panels -->
+  </div><!-- /main-content -->
+</div><!-- /slide -->
+
+<script>
+  const concerns = [
+    "Will my change go directly to production?",
+    "Will this break pages I don't know about?",
+    "Is my fix mixed with other changes?",
+    "features/dev vs main — what's the difference?",
+    "When does my change actually go live?"
+  ];
+
+  const s1Content = {
+    after: [
+      "Spot the visual issue, take a screenshot",
+      "Open Claude Code",
+      "Describe what you see — AI takes it from here"
+    ],
+    before: [
+      "Spot the visual issue, take a screenshot",
+      "Write repro steps",
+      "File a P2 bug in ADO"
+    ]
+  };
+
+  const s3Content = {
+    after: [
+      "Bug fixed in under an hour",
+      "PR filed, reviewed, and merged",
+      "No dev scheduling needed"
+    ],
+    before: [
+      "P2s deprioritized for months",
+      "Design intent silently lost",
+      "Quality debt compounds"
+    ]
+  };
+
+  function renderConcerns() {
+    document.getElementById('concern-view').innerHTML = concerns.map(c => `
+      <div class="c-card">
+        <span class="c-icon">?</span>
+        <span>${c}</span>
+      </div>`).join('');
+  }
+
+  function renderS1List(mode) {
+    document.getElementById('s1-list').innerHTML = s1Content[mode].map(t => `
+      <div class="step-item">${t}</div>`).join('');
+  }
+
+  function renderS3List(mode) {
+    document.getElementById('s3-list').innerHTML = s3Content[mode].map(t => `
+      <div class="step-item">${t}</div>`).join('');
+  }
+
+  function showWithFade(el) {
+    el.classList.remove('hidden');
+    el.classList.remove('fade-enter');
+    void el.offsetWidth; // force reflow
+    el.classList.add('fade-enter');
+  }
+
+  let showCollab = false;
+
+  function flipCards() {
+    showCollab = !showCollab;
+    if (showCollab) {
+      document.getElementById('concern-view').classList.add('hidden');
+      showWithFade(document.getElementById('collab-view'));
+    } else {
+      document.getElementById('collab-view').classList.add('hidden');
+      showWithFade(document.getElementById('concern-view'));
+    }
+    document.getElementById('cards-label').textContent = showCollab
+      ? 'How Designer × AI collaborate'
+      : 'What stops designers from fixing it?';
+    document.getElementById('flip-btn').textContent = showCollab
+      ? '← Back to blockers'
+      : 'How CLAUDE.md solves this →';
+  }
+
+  function setMode(mode) {
+    const before = mode === 'before';
+    document.getElementById('btn-before').classList.toggle('active', before);
+    document.getElementById('btn-after').classList.toggle('active', !before);
+
+    // Rail
+    document.getElementById('rail').className = `process-rail ${before ? 'mode-before' : ''}`;
+    document.getElementById('rc3').className = before ? 'rail-circle dim' : 'rail-circle';
+    document.getElementById('rl3').className = before ? 'rail-label dim' : 'rail-label';
+
+    // Center panel class + content
+    document.getElementById('panels').className = `panels ${before ? 'center-before' : ''}`;
+    if (before) {
+      document.getElementById('after-fix').classList.add('hidden');
+      showWithFade(document.getElementById('before-fix'));
+    } else {
+      document.getElementById('before-fix').classList.add('hidden');
+      showWithFade(document.getElementById('after-fix'));
+    }
+    document.getElementById('c2-title').textContent = before ? 'Fix' : 'Fix — by Designer × AI';
+
+    // Reset flip state to blockers view whenever mode switches
+    showCollab = false;
+    document.getElementById('collab-view').classList.add('hidden');
+    document.getElementById('concern-view').classList.remove('hidden');
+    document.getElementById('cards-label').textContent = 'What stops designers from fixing it?';
+    document.getElementById('flip-btn').textContent = 'How CLAUDE.md solves this →';
+
+    // Step 3
+    const s3 = document.getElementById('step3-panel');
+    s3.className = before ? 'panel s3-before' : 'panel';
+    document.getElementById('s3-title').textContent = before ? 'Backlog' : 'Quality';
+    document.getElementById('s3-desc').textContent  = before
+      ? 'Design craft issues pile up. Quality degrades silently.'
+      : 'Designer owns quality end to end.';
+    renderS1List(before ? 'before' : 'after');
+    renderS3List(before ? 'before' : 'after');
+  }
+
+  renderConcerns();
+  renderS1List('after');
+  setMode('after');
+</script>
+</body>
+</html>
